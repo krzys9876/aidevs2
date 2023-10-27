@@ -1,21 +1,12 @@
-import os
 from aidevslib import utils
 
 exercise = 'blogger'
-openai_api_key = os.getenv("OPENAI_API_KEY")
-openai_url = 'https://api.openai.com/v1/chat/completions'
 
 
 def write_blog_post(topic: str) -> str:
-    header = {f"Authorization": f"Bearer {openai_api_key}"}
     system_prompt = "Jesteś bloggerem kulinarnym, znasz się na robieniu pizzy Margherity."
     user_prompt = f"Napisz krótki wpis (trzy zdania) na blogu na temat: {topic}".encode("utf-8", "strict").decode()
-    data = {
-        "model": "gpt-4",
-        "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
-        "temperature": 1
-    }
-    result = utils.send_post_json(openai_url, data, header)
+    result = utils.chatgpt_completion(system_prompt, user_prompt)
     blog_post: str = result.result["choices"][0]["message"]["content"]
     return blog_post
 

@@ -8,6 +8,8 @@ token_url_postfix = 'token'
 task_url_postfix = 'task'
 answer_url_postfix = 'answer'
 my_api_key = os.getenv('AIDEVS_API_KEY')
+openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_url_completion = 'https://api.openai.com/v1/chat/completions'
 
 
 class ResponseResult:
@@ -58,3 +60,15 @@ def send_solution(token: str, answer) -> ResponseResult:
     data = {"answer": answer}
     url = f"{main_url}/{answer_url_postfix}/{token}"
     return send_post_json(url, data)
+
+
+def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4",
+                       temperature: float = 1.0) -> ResponseResult:
+    header = {f"Authorization": f"Bearer {openai_api_key}"}
+    data = {
+        "model": "gpt-4",
+        "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
+        "temperature": 1
+    }
+    result = send_post_json(openai_url_completion, data, header)
+    return result
