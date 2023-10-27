@@ -25,15 +25,8 @@ def send_question(token: str) -> utils.ResponseResult:
 
 
 def do_exercise() -> None:
-    auth_token_response = utils.get_auth_token(exercise)
-    if auth_token_response.is_invalid():
-        exit(1)
-    auth_token = auth_token_response.result['token']
-    print(f"got token {auth_token}")
-
-    exercise_response = utils.get_exercise_contents(auth_token)
-    if exercise_response.is_invalid():
-        exit(2)
+    auth_token = utils.get_auth_token_or_exit(exercise)
+    exercise_response = utils.get_exercise_info_or_exit(auth_token, exercise)
 
     answered = send_question(auth_token)
     print(answered.result)

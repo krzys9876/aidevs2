@@ -12,15 +12,8 @@ def write_blog_post(topic: str) -> str:
 
 
 def do_exercise() -> None:
-    auth_token_response = utils.get_auth_token(exercise)
-    if auth_token_response.is_invalid():
-        exit(1)
-    auth_token = auth_token_response.result['token']
-    print(f"got token {auth_token}")
-
-    exercise_response = utils.get_exercise_contents(auth_token)
-    if exercise_response.is_invalid():
-        exit(2)
+    auth_token = utils.get_auth_token_or_exit(exercise)
+    exercise_response = utils.get_exercise_info_or_exit(auth_token, exercise)
 
     input_items: [str] = exercise_response.result["blog"]
     output: [str] = list(map(write_blog_post, input_items))

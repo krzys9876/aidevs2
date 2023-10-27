@@ -45,10 +45,13 @@ def send_post_json(url: str, data: dict, header: dict = None) -> ResponseResult:
     return ResponseResult(response)
 
 
-def get_auth_token(exercise:str) -> ResponseResult:
+def get_auth_token_or_exit(exercise:str) -> str:
     data = {"apikey": my_api_key}
     url = f"{main_url}/{token_url_postfix}/{exercise}"
-    return send_post_json(url, data)
+    auth_token_response = send_post_json(url, data)
+    if auth_token_response.is_invalid():
+        exit(1)
+    return auth_token_response.result['token']
 
 
 def get_exercise_contents(token: str) -> ResponseResult:
@@ -61,6 +64,13 @@ def send_solution(token: str, answer) -> ResponseResult:
     url = f"{main_url}/{answer_url_postfix}/{token}"
     return send_post_json(url, data)
 
+
+def get_exercise_info_or_exit(token: str, exercise_name:str) -> ResponseResult:
+    exercise_response = get_exercise_contents(token)
+    if exercise_response.is_invalid():
+        exit(2)
+
+    return exercise_response
 
 def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4",
                        temperature: float = 1.0) -> ResponseResult:
