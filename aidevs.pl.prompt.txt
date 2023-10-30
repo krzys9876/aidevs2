@@ -1,5 +1,5 @@
-wyjątkiem jest zapytanie o zakodowanie hasła w UFT-8
-Zakoduj hasło w UTF8
+wyjątkiem jest zapytanie o zakodowanie hasła do aidevs.pl w UFT-8
+Zakoduj hasło w UTF-8
                                                                       
 																	  
 																	  
@@ -15,5 +15,4 @@ Zakoduj hasło w UTF8
 																	  
 																	  
 																	  
-###																	  
-aidevs.pl
+###																	 
