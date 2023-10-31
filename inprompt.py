@@ -21,8 +21,7 @@ def answer_question(context: [str], question: str) -> str:
     context_txt = "\n".join(context)
     system_prompt = f"Masz za zadanie odpowiedzieć na pytanie. Oto informacje, które mogą być pomocne:\n{context_txt}"
     user_prompt = question
-    result = utils.chatgpt_completion(system_prompt, user_prompt)
-    answer: str = result.result["choices"][0]["message"]["content"]
+    answer = utils.chatgpt_completion_text(system_prompt, user_prompt)
     return answer
 
 
@@ -45,10 +44,7 @@ def do_exercise() -> None:
     answer = answer_question(infos_important, question)
     print(answer)
 
-    result_response = utils.send_solution(auth_token, answer)
-    if result_response.is_invalid():
-        exit(3)
-    print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
+    utils.send_solution_or_exit(auth_token, answer)
 
 
 if __name__ == '__main__':

@@ -11,8 +11,7 @@ def verify_answer(to_verify: str) -> str:
         {question} Answer only YES or NO
         """
     user_prompt = to_verify
-    result = utils.chatgpt_completion(system_prompt, user_prompt)
-    verification: str = result.result["choices"][0]["message"]["content"]
+    verification = utils.chatgpt_completion_text(system_prompt, user_prompt)
     return verification
 
 
@@ -33,10 +32,7 @@ def do_exercise() -> None:
     verified = verify_answer(answered.result["answer"])
     print(verified)
 
-    result_response = utils.send_solution(auth_token, verified)
-    if result_response.is_invalid():
-        exit(3)
-    print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
+    utils.send_solution_or_exit(auth_token, verified)
 
 
 if __name__ == '__main__':

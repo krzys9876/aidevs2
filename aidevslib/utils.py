@@ -45,7 +45,7 @@ def send_post_json(url: str, data: dict, header: dict = None) -> ResponseResult:
     return ResponseResult(response)
 
 
-def get_auth_token_or_exit(exercise:str) -> str:
+def get_auth_token_or_exit(exercise: str) -> str:
     data = {"apikey": my_api_key}
     url = f"{main_url}/{token_url_postfix}/{exercise}"
     auth_token_response = send_post_json(url, data)
@@ -65,12 +65,21 @@ def send_solution(token: str, answer) -> ResponseResult:
     return send_post_json(url, data)
 
 
-def get_exercise_info_or_exit(token: str, exercise_name:str) -> ResponseResult:
+def send_solution_or_exit(token: str, answer) -> None:
+    result_response = send_solution(token, answer)
+    if result_response.is_invalid():
+        exit(3)
+    print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
+
+
+
+def get_exercise_info_or_exit(token: str, exercise_name: str) -> ResponseResult:
     exercise_response = get_exercise_contents(token)
     if exercise_response.is_invalid():
         exit(2)
 
     return exercise_response
+
 
 def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4",
                        temperature: float = 1.0) -> ResponseResult:
@@ -82,3 +91,9 @@ def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4
     }
     result = send_post_json(openai_url_completion, data, header)
     return result
+
+
+def chatgpt_completion_text(system_prompt: str, user_prompt: str, model: str = "gpt-4",
+                            temperature: float = 1.0) -> str:
+    result = chatgpt_completion(system_prompt, user_prompt, model, temperature)
+    return result.result["choices"][0]["message"]["content"]

@@ -6,8 +6,7 @@ exercise = 'blogger'
 def write_blog_post(topic: str) -> str:
     system_prompt = "Jesteś bloggerem kulinarnym, znasz się na robieniu pizzy Margherity."
     user_prompt = f"Napisz krótki wpis (trzy zdania) na blogu na temat: {topic}".encode("utf-8", "strict").decode()
-    result = utils.chatgpt_completion(system_prompt, user_prompt)
-    blog_post: str = result.result["choices"][0]["message"]["content"]
+    blog_post = utils.chatgpt_completion_text(system_prompt, user_prompt)
     return blog_post
 
 
@@ -19,10 +18,7 @@ def do_exercise() -> None:
     output: [str] = list(map(write_blog_post, input_items))
     print(f"got array {output}")
 
-    result_response = utils.send_solution(auth_token, output)
-    if result_response.is_invalid():
-        exit(3)
-    print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
+    utils.send_solution_or_exit(auth_token, output)
 
 
 if __name__ == '__main__':

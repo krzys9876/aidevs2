@@ -10,10 +10,7 @@ def do_exercise() -> None:
     cookie = exercise_response.result['cookie']
     print(f"got cookie {cookie}")
 
-    result_response = utils.send_solution(auth_token, cookie)
-    if result_response.is_invalid():
-        exit(3)
-    print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
+    utils.send_solution_or_exit(auth_token, cookie)
 
 
 if __name__ == '__main__':
