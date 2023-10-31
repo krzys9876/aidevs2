@@ -7,7 +7,7 @@ question = "What is the best known building in Rome?"
 
 def verify_answer(to_verify: str) -> str:
     system_prompt = f"""
-        You will be provided with a sentence. You are to could it be an answer to the question: 
+        You will be provided with a sentence. You are to tell could it be an answer to the question: 
         {question} Answer only YES or NO
         """
     user_prompt = to_verify
