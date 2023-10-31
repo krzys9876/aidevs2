@@ -18,10 +18,8 @@ def extract_name(sentence: str) -> str:
 
 
 def answer_question(context: [str], question: str) -> str:
-    context_txt = ""
-    for c in context:
-        context_txt = f"{context_txt}\n{c}"
-    system_prompt = f"Masz za zdanie odpowiedzieć na pytanie. Oto informacje, które mogą być pomocne:\n{context_txt}"
+    context_txt = "\n".join(context)
+    system_prompt = f"Masz za zadanie odpowiedzieć na pytanie. Oto informacje, które mogą być pomocne:\n{context_txt}"
     user_prompt = question
     result = utils.chatgpt_completion(system_prompt, user_prompt)
     answer: str = result.result["choices"][0]["message"]["content"]
