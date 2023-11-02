@@ -10,6 +10,13 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_url = 'https://api.openai.com/v1/audio/transcriptions'
 
 
+#  curl https://api.openai.com/v1/audio/transcriptions
+#  -H "Authorization: Bearer $OPENAI_API_KEY"
+#  -H "Content-Type: multipart/form-data"
+#  -F file="@whisper.mp3"
+#  -F model="whisper-1"
+
+
 def transcribe(file: str) -> str:
     # Uwaga: nagłówek bez: "Content-Type": "multipart/form-data"
     header = {"Authorization": f"Bearer {openai_api_key}"}
