@@ -2,6 +2,9 @@ import requests
 from requests import Response
 import json
 import os
+import pprint
+
+pp = pprint.PrettyPrinter(width=160)
 
 main_url = 'https://zadania.aidevs.pl'
 token_url_postfix = 'token'
@@ -16,8 +19,8 @@ class ResponseResult:
     def __init__(self, response: Response):
         self.status_code: int = response.status_code
         self.result: dict = response.json() if self.is_valid_status() else {}
-        print(f"Response {self.status_code}")
-        print(response.text)
+        print(f"Response {self.status_code}:")
+        pp.pprint(response.text)
 
     def is_valid_status(self) -> bool:
         return self.status_code == 200
@@ -40,7 +43,8 @@ def send_post_json(url: str, data: dict, header: dict = None) -> ResponseResult:
     post_headers: dict = {"Content-Type": "application/json"}
     if header is not None:
         post_headers = post_headers | header
-    print(f"sending: {data}")
+    print("Sending:")
+    pp.pprint(data)
     response = requests.post(url, data=json.dumps(data), headers=post_headers, verify=False)
     return ResponseResult(response)
 
