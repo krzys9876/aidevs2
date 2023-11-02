@@ -1,13 +1,10 @@
 from aidevslib import utils
 import pprint
 import requests
-import os
 
 pp = pprint.PrettyPrinter(width=160)
 
 exercise = 'whisper'
-openai_api_key = os.getenv("OPENAI_API_KEY")
-openai_url = 'https://api.openai.com/v1/audio/transcriptions'
 
 
 def download_file(url: str, fname: str) -> None:
@@ -27,7 +24,7 @@ def do_exercise() -> None:
     print(f"target file: {file_loc}")
     download_file(file_url, file_loc)
 
-    transcription = utils.openai_transcribe(openai_url, file_loc)
+    transcription = utils.openai_transcribe(file_loc)
     pp.pprint(f"transcription: {transcription}")
 
     utils.send_solution_or_exit(auth_token, transcription)

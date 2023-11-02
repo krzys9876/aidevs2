@@ -13,6 +13,7 @@ answer_url_postfix = 'answer'
 my_api_key = os.getenv('AIDEVS_API_KEY')
 openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_url_completion = 'https://api.openai.com/v1/chat/completions'
+openai_url_transcription = 'https://api.openai.com/v1/audio/transcriptions'
 
 
 class ResponseResult:
@@ -115,7 +116,7 @@ def make_path(base, file_name: str) -> str:
 #  -F file="@whisper.mp3"
 #  -F model="whisper-1"
 
-def openai_transcribe(api_url: str, file: str) -> str:
+def openai_transcribe(file: str) -> str:
     # Uwaga: nagłówek bez: "Content-Type": "multipart/form-data"
     header = {"Authorization": f"Bearer {openai_api_key}"}
     with open(file, "rb") as file_to_send:
@@ -123,7 +124,7 @@ def openai_transcribe(api_url: str, file: str) -> str:
         files = {"file": ("file1.mp3", open(file, "rb"), "application/octet-stream")}
         # Uwaga: pole data NIE jako JSON, ale tablica (k,v)
         data = [("model", "whisper-1")]
-        response = requests.request(method="post", url=api_url, files=files, data=data, headers=header)
+        response = requests.request(method="post", url=openai_url_transcription, files=files, data=data, headers=header)
         result = ResponseResult(response)
         transcribed = result.result["text"]
     return transcribed
