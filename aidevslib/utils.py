@@ -101,3 +101,29 @@ def chatgpt_completion_text(system_prompt: str, user_prompt: str, model: str = "
                             temperature: float = 1.0) -> str:
     result = chatgpt_completion(system_prompt, user_prompt, model, temperature)
     return result.result["choices"][0]["message"]["content"]
+
+
+def make_path(base, file_name: str) -> str:
+    curr_dir = os.path.dirname(base)
+    separator = os.path.sep
+    return f"{curr_dir}{separator}{file_name}"
+
+
+#  curl https://api.openai.com/v1/audio/transcriptions
+#  -H "Authorization: Bearer $OPENAI_API_KEY"
+#  -H "Content-Type: multipart/form-data"
+#  -F file="@whisper.mp3"
+#  -F model="whisper-1"
+
+def openai_transcribe(api_url: str, file: str) -> str:
+    # Uwaga: nagłówek bez: "Content-Type": "multipart/form-data"
+    header = {"Authorization": f"Bearer {openai_api_key}"}
+    with open(file, "rb") as file_to_send:
+        # files: zawiera wyłącznie plki
+        files = {"file": ("file1.mp3", open(file, "rb"), "application/octet-stream")}
+        # Uwaga: pole data NIE jako JSON, ale tablica (k,v)
+        data = [("model", "whisper-1")]
+        response = requests.request(method="post", url=api_url, files=files, data=data, headers=header)
+        result = ResponseResult(response)
+        transcribed = result.result["text"]
+    return transcribed

@@ -10,27 +10,6 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_url = 'https://api.openai.com/v1/audio/transcriptions'
 
 
-#  curl https://api.openai.com/v1/audio/transcriptions
-#  -H "Authorization: Bearer $OPENAI_API_KEY"
-#  -H "Content-Type: multipart/form-data"
-#  -F file="@whisper.mp3"
-#  -F model="whisper-1"
-
-
-def transcribe(file: str) -> str:
-    # Uwaga: nagłówek bez: "Content-Type": "multipart/form-data"
-    header = {"Authorization": f"Bearer {openai_api_key}"}
-    with open(file, "rb") as file_to_send:
-        # files: zawiera wyłącznie plki
-        files = {"file": ("file1.mp3", open(file, "rb"), "application/octet-stream")}
-        # Uwaga: pole data NIE jako JSON, ale tablica (k,v)
-        data = [("model", "whisper-1")]
-        response = requests.request(method="post", url=openai_url, files=files, data=data, headers=header)
-        result = utils.ResponseResult(response)
-        transcribed = result.result["text"]
-    return transcribed
-
-
 def download_file(url: str, fname: str) -> None:
     file_response = requests.get(url, verify=False)
     open(fname, "wb").write(file_response.content)
@@ -44,10 +23,11 @@ def do_exercise() -> None:
     msg: str = exercise_response.result["msg"]
     file_url: str = msg[msg.find("https://"):]
     print(f"got URL: {file_url}")
-    filename = "whisper.mp3"
-    download_file(file_url, filename)
+    file_loc = utils.make_path(__file__, "whisper.mp3")
+    print(f"target file: {file_loc}")
+    download_file(file_url, file_loc)
 
-    transcription = transcribe(filename)
+    transcription = utils.openai_transcribe(openai_url, file_loc)
     pp.pprint(f"transcription: {transcription}")
 
     utils.send_solution_or_exit(auth_token, transcription)
