@@ -90,9 +90,9 @@ def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4
                        temperature: float = 1.0) -> ResponseResult:
     header = {f"Authorization": f"Bearer {openai_api_key}"}
     data = {
-        "model": "gpt-4",
+        "model": model,
         "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
-        "temperature": 1
+        "temperature": temperature
     }
     result = send_post_json(openai_url_completion, data, header, True)
     return result
