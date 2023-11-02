@@ -19,7 +19,7 @@ def send_question(token: str) -> utils.ResponseResult:
     url = f"{utils.main_url}/{utils.task_url_postfix}/{token}"
     # NOTE: no header required
     data = {"question": question}
-    response = requests.post(url, data=data, verify=False)
+    response = requests.post(url, data=data)
     return utils.ResponseResult(response)
 
 

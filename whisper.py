@@ -25,7 +25,7 @@ def transcribe(file: str) -> str:
         files = {"file": ("file1.mp3", open(file, "rb"), "application/octet-stream")}
         # Uwaga: pole data NIE jako JSON, ale tablica (k,v)
         data = [("model", "whisper-1")]
-        response = requests.request(method="post", url=openai_url, files=files, data=data, headers=header, verify=False)
+        response = requests.request(method="post", url=openai_url, files=files, data=data, headers=header)
         result = utils.ResponseResult(response)
         transcribed = result.result["text"]
     return transcribed
