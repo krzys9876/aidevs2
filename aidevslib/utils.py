@@ -40,13 +40,13 @@ def send_get(url: str) -> ResponseResult:
     return ResponseResult(response)
 
 
-def send_post_json(url: str, data: dict, header: dict = None) -> ResponseResult:
+def send_post_json(url: str, data: dict, header: dict = None, verify: bool = False) -> ResponseResult:
     post_headers: dict = {"Content-Type": "application/json"}
     if header is not None:
         post_headers = post_headers | header
     print("Sending:")
     pp.pprint(data)
-    response = requests.post(url, data=json.dumps(data), headers=post_headers, verify=False)
+    response = requests.post(url, data=json.dumps(data), headers=post_headers, verify=verify)
     return ResponseResult(response)
 
 
@@ -94,7 +94,7 @@ def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4
         "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
         "temperature": 1
     }
-    result = send_post_json(openai_url_completion, data, header)
+    result = send_post_json(openai_url_completion, data, header, True)
     return result
 
 
