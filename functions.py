@@ -1,6 +1,5 @@
 from aidevslib import utils
 import pprint
-import json
 
 pp = pprint.PrettyPrinter(width=160)
 
@@ -14,22 +13,14 @@ def define_function() -> dict:
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "user name"
-                },
-                "surname": {
-                    "type": "string",
-                    "description": "user surname"
-                },
-                "year": {
-                    "type": "integer",
-                    "description": "year of birth"
-                }
+                "name": {"type": "string", "description": "user name"},
+                "surname": {"type": "string", "description": "user surname"},
+                "year": {"type": "integer", "description": "year of birth"}
             },
             "required": ["name", "surname", "year"]
         }
     }
+
 
 def do_exercise() -> None:
     auth_token = utils.get_auth_token_or_exit(exercise)
@@ -44,4 +35,3 @@ if __name__ == '__main__':
     print("START")
     do_exercise()
     print("END")
-
