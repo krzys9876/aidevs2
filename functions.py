@@ -35,7 +35,7 @@ def do_exercise() -> None:
     auth_token = utils.get_auth_token_or_exit(exercise)
     exercise_response = utils.get_exercise_info_or_exit(auth_token, exercise)
     schema = define_function()
-    pp.pprint(json.dumps(schema))
+    pp.pprint(schema)
 
     utils.send_solution_or_exit(auth_token, schema)
 
