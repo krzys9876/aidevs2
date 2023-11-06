@@ -30,7 +30,7 @@ class ResponseResult:
         return self.is_valid_status() and self.result["code"] == 0
 
     def is_invalid(self) -> bool:
-        return not self.is_valid
+        return not self.is_valid()
 
 
 def send_get(url: str) -> ResponseResult:
@@ -72,6 +72,7 @@ def send_solution(token: str, answer) -> ResponseResult:
 
 def send_solution_or_exit(token: str, answer) -> None:
     result_response = send_solution(token, answer)
+    pp.pprint(result_response.result)
     if result_response.is_invalid():
         exit(3)
     print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
