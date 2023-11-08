@@ -71,12 +71,23 @@ def send_solution(token: str, answer) -> ResponseResult:
 
 
 def send_solution_or_exit(token: str, answer) -> None:
-    result_response = send_solution(token, answer)
+    (code, success) = try_send_solution_or_exit(token, answer)
+    if not success:
+        exit(3)
+
+
+def try_send_solution_or_exit(token: str, answer) -> (int, bool):
+    try:
+        result_response = send_solution(token, answer)
+    except requests.exceptions.RequestException as e:
+        pp.pprint(e)
+        return -1, False
+
     pp.pprint(result_response.result)
     if result_response.is_invalid():
-        exit(3)
+        return result_response.status_code, False
     print(f"got result {result_response.result['msg']} / {result_response.result['note']}")
-
+    return result_response.status_code, True
 
 
 def get_exercise_info_or_exit(token: str, exercise_name: str) -> ResponseResult:
