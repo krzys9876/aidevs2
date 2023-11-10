@@ -40,6 +40,21 @@ def send_get(url: str) -> ResponseResult:
     return ResponseResult(response)
 
 
+def get_file(url: str, file: str) -> str:
+    if not os.path.exists(file):
+        response = requests.get(url, headers={"Content-Type": "text/html; charset=utf-8"}, verify=False)
+        if response.status_code != 200:
+            print("FATAL")
+            print(response)
+            exit(1)
+        with open(file, "wt") as f:
+            f.write(response.text)
+
+    with open(file, "rt") as f:
+        text = f.read()
+    return text
+
+
 def send_post_json(url: str, data: dict, header: dict = None, verify: bool = False) -> ResponseResult:
     post_headers: dict = {"Content-Type": "application/json"}
     if header is not None:

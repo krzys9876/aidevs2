@@ -17,27 +17,12 @@ BASE_PATH = "c:\\data\\docker\\"
 SQLDB_PATH = f"{BASE_PATH}sqlite\\aidevs_search.sqlite"
 QDRANT_PATH = f"{BASE_PATH}qdrant_local\\"
 JSON_PATH = f"{BASE_PATH}\\tmp\\aidevs_search.json"
+JSON_URL = "https://unknow.news/archiwum.json"
 COLLECTION_NAME = "aidevs_search"
 client = QdrantClient(path=QDRANT_PATH)
 sqldb = sqlite3.connect(SQLDB_PATH)
 # 300 wpisów powinno wystarczyć do rozwiązania zadania
 MAX_ITEMS = 300
-
-
-def get_source() -> str:
-    if not os.path.exists(JSON_PATH):
-        response = requests.get("https://unknow.news/archiwum.json",
-                                headers={"Content-Type": "text/html; charset=utf-8"}, verify=False)
-        if response.status_code != 200:
-            print("FATAL")
-            print(response)
-            exit(1)
-        with open(JSON_PATH, "wt") as f:
-            f.write(response.text)
-
-    with open(JSON_PATH, "rt") as f:
-        text = f.read()
-    return text
 
 
 def create_tables_if_not_exist() -> None:
@@ -129,7 +114,7 @@ def process_one_info(info: []) -> bool:
 def prepare_db() -> bool:
     create_tables_if_not_exist()
     create_collection_if_not_exists()
-    copy_source_to_db(json.loads(get_source())[:MAX_ITEMS])
+    copy_source_to_db(json.loads(utils.get_file(JSON_URL, JSON_PATH))[:MAX_ITEMS])
     counter = 0
     for i in get_all_non_processed_infos():
         print(f"processing id {i[0]}")
