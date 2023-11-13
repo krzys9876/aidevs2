@@ -113,7 +113,7 @@ def get_exercise_info_or_exit(token: str, exercise_name: str) -> ResponseResult:
     return exercise_response
 
 
-def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4",
+def chatgpt_completion(system_prompt: str, user_prompt: str, functions: [dict] = None, model: str = "gpt-4",
                        temperature: float = 1.0) -> ResponseResult:
     header = {f"Authorization": f"Bearer {openai_api_key}"}
     data = {
@@ -121,13 +121,15 @@ def chatgpt_completion(system_prompt: str, user_prompt: str, model: str = "gpt-4
         "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
         "temperature": temperature
     }
+    if functions is not None:
+        data.update({"functions": functions})
     result = send_post_json(openai_url_completion, data, header, True)
     return result
 
 
 def chatgpt_completion_text(system_prompt: str, user_prompt: str, model: str = "gpt-4",
                             temperature: float = 1.0) -> str:
-    result = chatgpt_completion(system_prompt, user_prompt, model, temperature)
+    result = chatgpt_completion(system_prompt, user_prompt, None, model, temperature)
     return result.result["choices"][0]["message"]["content"]
 
 
