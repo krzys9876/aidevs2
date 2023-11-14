@@ -7,7 +7,6 @@ pp = pprint.PrettyPrinter(width=160)
 
 exercise = 'tools'
 
-
 tools = [
     {
         "type": "function",
@@ -42,31 +41,43 @@ tools = [
 
 prompt = ("Prepare a function call based on a given sentence. "
           "Choose a calendar task only when date is given. Choose todo task list otherwise.\n\n"
-          "Try to derive date from the sentence using current date.\n"          
+          "Try to derive date from the sentence using current date.\n"
           "Facts:\n"
-          f"- Today is { datetime.today().strftime("%Y-%m-%d")}\n\n"
+          f"- Today is {datetime.today().strftime("%Y-%m-%d")}\n\n"
           "Rules:\n"
           "- Use the same language as used in the given sentence."
           "- Rephrase tasks to be verbless sentences"
-          "- Use date format YYYY-MM-DD\n\n" )
+          "- Use date format YYYY-MM-DD\n\n")
+
+
+def decode_answer(function_name: str, args: dict) -> dict | None:
+    match function_name:
+        case "add_to_todo_list":
+            answer = {"tool": "ToDo", "desc": args["task"]}
+        case "add_to_calendar":
+            answer = {"tool": "Calendar", "desc": args["task"], "date": args["date"]}
+        case _:
+            answer = None
+    return answer
 
 
 # finish_reason = "stop" - API responds with message/content/json object
 def get_answer_from_stop(full_result: dict) -> str | None:
     function_call = json.loads(full_result["message"]["content"])
-    # the API randomly returns $kind, $type, $invoke...
-    function_type_key = list(function_call.keys())[0]
+    # the API randomly returns $kind, $type, $invoke, $schema, sometimes w/o "$" etc.
+    function_type_list = list(filter(lambda k: k[0] == "$", function_call.keys()))
+    if len(function_type_list) > 0:
+        function_type_key = function_type_list[0]
+    else:
+        function_type_key = list(function_call.keys())[0]
+
     function_type = function_call[function_type_key]
     if function_type is None or "functions." not in function_type:
         print("FATAL not a function call")
         exit(1)
     pp.pprint(function_call)
     function_name = function_type.replace("functions.", "")
-    answer = None
-    match function_name:
-        case "add_to_todo_list": answer = {"tool": "ToDo", "desc": function_call["task"]}
-        case "add_to_calendar": answer = {"tool": "Calendar", "desc": function_call["task"], "date": function_call["date"]}
-    return answer
+    return decode_answer(function_name, function_call)
 
 
 # finish_reason = "tool_calls" - API responds with message/tool_calls/[json object]
@@ -80,11 +91,7 @@ def get_answer_from_tool_calls(full_result: dict) -> str | None:
     pp.pprint(function_call)
     function_name = function_call["function"]["name"]
     function_args = json.loads(function_call["function"]["arguments"])
-    answer = None
-    match function_name:
-        case "add_to_todo_list": answer = {"tool": "ToDo", "desc": function_args["task"]}
-        case "add_to_calendar": answer = {"tool": "Calendar", "desc": function_args["task"], "date": function_args["date"]}
-    return answer
+    return decode_answer(function_name, function_args)
 
 
 def do_exercise() -> None:
@@ -98,8 +105,10 @@ def do_exercise() -> None:
     answer = None
     full_result = response.result["choices"][0]
     match full_result["finish_reason"]:
-        case "stop": answer = get_answer_from_stop(full_result)
-        case "tool_calls": answer = get_answer_from_tool_calls(full_result)
+        case "stop":
+            answer = get_answer_from_stop(full_result)
+        case "tool_calls":
+            answer = get_answer_from_tool_calls(full_result)
 
     if answer is None:
         print("FATAL no answer")
@@ -107,7 +116,6 @@ def do_exercise() -> None:
 
     print(f"got answer: {answer}")
     utils.send_solution_or_exit(auth_token, answer)
-
 
 
 if __name__ == '__main__':
