@@ -1,3 +1,5 @@
+from typing import Any
+
 import requests
 from requests import Response
 import json
@@ -114,8 +116,8 @@ def get_exercise_info_or_exit(token: str, exercise_name: str) -> ResponseResult:
 
 
 # NOTE: param: functions is deprecated (2023-11-14), use tools instead
-def chatgpt_completion(system_prompt: str, user_prompt: str, functions: [dict] = None, tools: [dict] = None, model: str = "gpt-4",
-                       temperature: float = 1.0) -> ResponseResult:
+def chatgpt_completion(system_prompt: str, user_prompt: Any, functions: [dict] = None, tools: [dict] = None,
+                       model: str = "gpt-4", temperature: float = 1.0, max_tokens=None) -> ResponseResult:
     header = {f"Authorization": f"Bearer {openai_api_key}"}
     data = {
         "model": model,
@@ -126,6 +128,8 @@ def chatgpt_completion(system_prompt: str, user_prompt: str, functions: [dict] =
         data.update({"functions": functions})
     if tools is not None:
         data.update({"tools": tools, "tool_choice": "auto"})
+    if max_tokens is not None:
+        data.update({"max_tokens": max_tokens})
     result = send_post_json(openai_url_completion, data, header, True)
     return result
 
