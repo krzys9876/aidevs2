@@ -1,0 +1,11 @@
+python -m venv .venv
+source .venv/bin/activate
+
+export FLASK_APP=app.py
+export FLASK_ENV=development
+export FLASK_DEBUG=1
+export OPENAI_API_KEY=xxxx
+flask run --port=5001 --host=0.0.0.0 --cert=adhoc
+
+sample curl (windows command prompt): 
+curl -k -X POST -H "Content-Type: application/json" -d "{\"foo\":  \"bar\", \"baz\": \"faz\" }" https://192.168.___:5001/api
