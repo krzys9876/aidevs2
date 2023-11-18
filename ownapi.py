@@ -11,7 +11,7 @@ def do_exercise() -> None:
     exercise_response = utils.get_exercise_info_or_exit(auth_token, exercise)
     pp.pprint(exercise_response.result)
 
-    answer = "https://krzys9876dodo.ddns.net:55574/api"
+    answer = "https://_:_/api"
     utils.send_solution_or_exit(auth_token, answer)
 
 
