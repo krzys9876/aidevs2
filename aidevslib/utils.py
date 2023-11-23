@@ -135,9 +135,9 @@ def chatgpt_completion(system_prompt: str, user_prompt: Any, functions: [dict] =
 
 
 def chatgpt_completion_text(system_prompt: str, user_prompt: str, model: str = "gpt-4",
-                            temperature: float = 1.0) -> str:
+                            temperature: float = 1.0, max_tokens=None) -> str:
     result = chatgpt_completion(system_prompt=system_prompt, user_prompt=user_prompt, functions=None,
-                                model=model, temperature=temperature)
+                                model=model, temperature=temperature, max_tokens=max_tokens)
     return result.result["choices"][0]["message"]["content"]
 
 
