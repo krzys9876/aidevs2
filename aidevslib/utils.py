@@ -130,7 +130,7 @@ def chatgpt_completion(system_prompt: str, user_prompt: Any, functions: [dict] =
         data.update({"tools": tools, "tool_choice": "auto"})
     if max_tokens is not None:
         data.update({"max_tokens": max_tokens})
-    result = send_post_json(openai_url_completion, data, header, True)
+    result = send_post_json(openai_url_completion, data, header, False)
     return result
 
 
