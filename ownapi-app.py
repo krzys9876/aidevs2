@@ -1,11 +1,12 @@
 from flask import Flask, request, Request
 from aidevslib import utils
 from pprint import PrettyPrinter
+import os
 
 pp = PrettyPrinter(width=160)
 
 app = Flask(__name__)
-
+SERPAPI_KEY=os.getenv("SERPAPI_KEY")
 
 memory: [(str, str)] = []
 
@@ -72,6 +73,44 @@ def apipro_call():
     app.logger.info(pp.pformat(memory))
 
     return {'reply': reply}, 200
+
+
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+    match ensure_post_json(request):
+        case False, r, c: return r, c
+        case _: pass
+
+    formatted = pp.pformat(request.json)
+    app.logger.info(f"Got this:\n{formatted}")
+    question: str = request.json["question"]
+    app.logger.info(f"Got question:\n{question}")
+    # prepare prompt
+    prompt = ("You are a helpful assistant that prepares keywords for further web search. "
+              "From a question below retrieve a keyword that can be used to search in google search engine. "
+              "Write the keyword only.\n###\n")
+    # get reply
+    try:
+        reply = utils.chatgpt_completion_text(prompt, question)
+    except Exception as e:
+        app.logger.info(f"Got exception:\n{str(e)}")
+        return {'error': 'Sorry, got some error here...'}, 400
+    app.logger.info(f"Got reply:\n{reply}")
+
+    search_params = {
+        "api_key": SERPAPI_KEY,
+        "engine": "google",
+        "google_domain": "google.pl",
+        "gl": "pl",
+        "hl": "pl",
+        "q": reply
+    }
+
+    search_results = utils.send_get("https://serpapi.com/search", search_params)
+
+    pp.pprint(search_results.result)
+
+    return {'reply': search_results.result["organic_results"][0]["link"]}, 200
 
 
 if __name__ == '__main__':
